@@ -17,7 +17,7 @@ def hello_world():
 def minecraft_server_url(version):
     if r.get('last_minecraft_update') is None:
         minecraft_cache_update()
-    print 'Last updated on %s' % r.get('last_minecraft_update').strftime("%c")
+    print 'Last updated on %s' % r.get('last_minecraft_update')
     if version == 'latest':
         minecraft_version = r.get('latest_minecraft_server')
     elif version == 'snapshot':
@@ -32,7 +32,7 @@ def minecraft_server_url(version):
 def minecraft_client_url(version):
     if r.get('last_minecraft_update') is None:
         minecraft_cache_update()
-    print 'Last updated on %s' % r.get('last_minecraft_update').strftime("%c")
+    print 'Last updated on %s' % r.get('last_minecraft_update')
     if version == 'latest':
         minecraft_version = r.get('latest_minecraft_client')
     elif version == 'snapshot':
