@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+    <div class="row">
+        <div class="four columns">
+            <h4>Latest Server Versions</h4>
+            <hr>
+            <ul>
+            <li><a href="/minecraft/server/download/latest">Latest Stable</a></li>
+            <li><a href="/minecraft/server/download/snapshot">Latest Snapshot</a></li>
+            </ul>
+        </div>
+        <div class="four columns">
+            <h4>Latest Client Versions</h4>
+            <hr>
+            <ul>
+            <li><a href="/minecraft/client/download/latest">Latest Stable</a></li>
+            <li><a href="/minecraft/client/download/snapshot">Latest Snapshot</a></li>
+            <li><a href="/minecraft/client/download/beta">Latest Old Beta</a></li>
+            </ul>
+        </div>
+        <div class="four columns">
+            <h4>Current JSON</h4>
+            <hr>
+            <ul><li><a href="/minecraft/json">Minecraft JSON</a></li></ul>
+        </div>
+    </div>
+    </div>
+{% endblock %}

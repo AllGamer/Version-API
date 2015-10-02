@@ -1,4 +1,4 @@
-from flask import Flask, redirect, jsonify
+from flask import Flask, redirect, jsonify, render_template
 import json
 import ast
 import requests
@@ -6,12 +6,12 @@ import redis
 from datetime import datetime
 
 app = Flask(__name__)
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
+r = redis.StrictRedis(host='version.allgamer.net', port=6379, db=0)
 
 
 @app.route('/')
 def hello_world():
-    return 'What are you looking for?'
+    return render_template('index.html')
 
 @app.route('/minecraft/server/download/<version>')
 def minecraft_server_url(version):
@@ -44,12 +44,17 @@ def minecraft_client_url(version):
     minecraft_download = 'https://s3.amazonaws.com/Minecraft.Download/versions/'+minecraft_version+'/'+minecraft_version+'.jar'
     return redirect(minecraft_download)
 
-@app.route('/minecraft')
+@app.route('/minecraft/json')
 def display_minecraft_versions():
     if r.get('last_minecraft_update') is None:
         minecraft_cache_update()
     m_json = ast.literal_eval(r.get('minecraft_json'))
     return jsonify(m_json)
+
+
+@app.route('/minecraft')
+def minecraft_index():
+    return render_template('minecraft_index.html')
 
 
 def minecraft_cache_update():
