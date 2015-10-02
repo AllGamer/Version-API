@@ -53,7 +53,7 @@ def display_minecraft_versions():
 
 
 def minecraft_cache_update():
-    r.setex('last_minecraft_update', datetime.now(), 900)
+    r.setex('last_minecraft_update', 900, datetime.now())
     minecraft_json = requests.get('https://s3.amazonaws.com/Minecraft.Download/versions/versions.json').json()
     latest = minecraft_json['latest']['release']
     snapshot = minecraft_json['versions'][0]['id']
