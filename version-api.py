@@ -17,11 +17,7 @@ def hello_world():
 def minecraft_server_url(version):
     if r.get('last_minecraft_update') is None:
         minecraft_cache_update()
-    else:
-        time_difference = datetime.now() - datetime.strptime(r.get('last_minecraft_update'), "%Y-%m-%d %H:%M:%S.%f")
-        print time_difference.seconds
-        if time_difference.seconds > 900:
-            minecraft_cache_update()
+    print 'Last updated on %s' % r.get('last_minecraft_update').strftime("%c")
     if version == 'latest':
         minecraft_version = r.get('latest_minecraft_server')
     elif version == 'snapshot':
@@ -36,11 +32,7 @@ def minecraft_server_url(version):
 def minecraft_client_url(version):
     if r.get('last_minecraft_update') is None:
         minecraft_cache_update()
-    else:
-        time_difference = datetime.now() - datetime.strptime(r.get('last_minecraft_update'), "%Y-%m-%d %H:%M:%S.%f")
-        print time_difference.seconds
-        if time_difference.seconds > 900:
-            minecraft_cache_update()
+    print 'Last updated on %s' % r.get('last_minecraft_update').strftime("%c")
     if version == 'latest':
         minecraft_version = r.get('latest_minecraft_client')
     elif version == 'snapshot':
@@ -54,14 +46,14 @@ def minecraft_client_url(version):
 
 @app.route('/minecraft')
 def display_minecraft_versions():
-    if r.get('minecraft_json') is None:
+    if r.get('last_minecraft_update') is None:
         minecraft_cache_update()
     m_json = ast.literal_eval(r.get('minecraft_json'))
     return jsonify(m_json)
 
 
 def minecraft_cache_update():
-    r.set('last_minecraft_update', datetime.now())
+    r.setex('last_minecraft_update', datetime.now(), 900)
     minecraft_json = requests.get('https://s3.amazonaws.com/Minecraft.Download/versions/versions.json').json()
     latest = minecraft_json['latest']['release']
     snapshot = minecraft_json['versions'][0]['id']
