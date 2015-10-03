@@ -6,7 +6,7 @@ import redis
 from datetime import datetime
 
 app = Flask(__name__)
-r = redis.StrictRedis(host='version.allgamer.net', port=6379, db=0)
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
 @app.route('/')
@@ -26,6 +26,16 @@ def minecraft_server_url(version):
         minecraft_version = version
     minecraft_download = 'https://s3.amazonaws.com/Minecraft.Download/versions/'+minecraft_version+'/minecraft_server.'+minecraft_version+'.jar'
     return redirect(minecraft_download)
+
+
+@app.route('/minecraft/server/versions')
+def minecraft_server_versions():
+    print r.get('minecraft_versions_list')
+    if r.get('minecraft_versions_list') is not None:
+        return r.get('minecraft_versions_list')
+    else:
+        minecraft_versions_list_update()
+        return r.get('minecraft_versions_list')
 
 
 @app.route('/minecraft/client/download/<version>')
@@ -73,6 +83,17 @@ def minecraft_cache_update():
             version_id = v['id']
             break
     r.set('beta_minecraft_client', version_id)
+    return
+
+
+def minecraft_versions_list_update():
+    versions_list = []
+    for element in ast.literal_eval(r.get('minecraft_json'))['versions']:
+        if element['type'] == 'snapshot' or element['type'] == 'release' or element['type'] == 'old_beta':
+            version = '%s-%s' % (element['id'], element['type'])
+            versions_list.append(version)
+    versions_list = ' '.join(versions_list)
+    r.setex('minecraft_versions_list', 900, versions_list)
     return
 
 
