@@ -167,7 +167,7 @@ def sourcemod_dev(platform, version):
 
 @app.route('/metamod/download/<platform>')
 def metamod_latest(platform):
-    response = requests.get('https://www.metamodsource.net/downloads/', verify=False).content
+    response = requests.get('http://www.metamodsource.net/downloads/').content
     links = []
     for l in BeautifulSoup(response, parseOnlyThese=SoupStrainer('a')):
         links.append(l['href'])
