@@ -4,6 +4,8 @@ import ast
 import requests
 import redis
 from datetime import datetime
+from BeautifulSoup import BeautifulSoup, SoupStrainer
+import re
 
 app = Flask(__name__)
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -96,6 +98,96 @@ def minecraft_versions_list_update():
     r.setex('minecraft_versions_list', 900, versions_list)
     return
 
+
+@app.route('/sourcemod/download/<platform>/stable/<version>')
+def sourcemod_stable(platform, version):
+    if platform == 'linux':
+        latest_stable = 'http://www.sourcemod.net/smdrop/1.7/sourcemod-latest-linux'
+        if version != 'latest':
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+version
+        else:
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+latest_stable
+        return redirect(sourcemod_download)
+    if platform == 'windows':
+        latest_stable = 'http://www.sourcemod.net/smdrop/1.7/sourcemod-latest-windows'
+        if version != 'latest':
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+version
+        else:
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+latest_stable
+        return redirect(sourcemod_download)
+    if platform == 'mac':
+        latest_stable = 'http://www.sourcemod.net/smdrop/1.7/sourcemod-latest-mac'
+        if version != 'latest':
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+version
+        else:
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+latest_stable
+        return redirect(sourcemod_download)
+
+
+@app.route('/sourcemod/download/<platform>/dev/<version>')
+def sourcemod_dev(platform, version):
+    if platform == 'linux':
+        latest_dev = 'http://www.sourcemod.net/smdrop/1.8/sourcemod-latest-linux'
+        if version != 'latest':
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+version
+        else:
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+latest_dev
+        return redirect(sourcemod_download)
+    if platform == 'windows':
+        latest_dev = 'http://www.sourcemod.net/smdrop/1.8/sourcemod-latest-windows'
+        if version != 'latest':
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+version
+        else:
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+latest_dev
+        return redirect(sourcemod_download)
+    if platform == 'mac':
+        latest_dev = 'http://www.sourcemod.net/smdrop/1.8/sourcemod-latest-mac'
+        if version != 'latest':
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+version
+        else:
+            sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+latest_dev
+        return redirect(sourcemod_download)
+
+
+@app.route('/metamod/download/<platform>')
+def metamod_latest(platform):
+    response = requests.get('https://www.metamodsource.net/downloads/').content
+    links = []
+    for l in BeautifulSoup(response, parseOnlyThese=SoupStrainer('a')):
+        links.append(l['href'])
+
+    links_list = []
+    for link in links:
+        match = re.match(r'(?im)^downloads/mmsource-(.+?)-(windows\.zip|linux\.tar\.gz|mac\.zip)$', link)
+        if match:
+            links_list.append(match.group())
+
+    windows, linux, mac = None, None, None
+    for v in links_list:
+        if v.find('windows') != -1:
+            windows = v
+        elif v.find('linux') != -1:
+            linux = v
+        else:
+            mac = v
+    if platform == 'windows':
+        if windows is not None:
+            metamod_download = 'https://www.metamodsource.net/'+windows
+            return redirect(metamod_download)
+        else:
+            return 'Error finding file'
+    if platform == 'linux':
+        if windows is not None:
+            metamod_download = 'https://www.metamodsource.net/'+linux
+            return redirect(metamod_download)
+        else:
+            return 'Error finding file'
+    else:
+        if windows is not None:
+            metamod_download = 'https://www.metamodsource.net/'+mac
+            return redirect(metamod_download)
+        else:
+            return 'Error finding file'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
