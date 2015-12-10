@@ -174,34 +174,39 @@ def metamod_latest(platform):
 
     links_list = []
     for link in links:
-        match = re.match(r'(?im)^downloads/mmsource-(.+?)-(windows\.zip|linux\.tar\.gz|mac\.zip)$', link)
+        match = re.match(r'(?im)^\/downloads\/mmsource-(.+?)-(windows\.zip|linux\.tar\.gz|mac\.zip)$', link)
         if match:
             links_list.append(match.group())
+    linux, windows, mac = None, None, None
+    for link in links_list:
+        links = []
+        response = requests.get('http://www.metamodsource.net'+link).content
+        for l in BeautifulSoup(response, parseOnlyThese=SoupStrainer('a')):
+            links.append(l['href'])
 
-    windows, linux, mac = None, None, None
-    for v in links_list:
-        if v.find('windows') != -1:
-            windows = v
-        elif v.find('linux') != -1:
-            linux = v
-        else:
-            mac = v
+        for line in links:
+            match = re.match(r'(?im)^http:(.+?)-(windows\.zip|linux\.tar\.gz|mac\.zip)$', line)
+            if match:
+                if match.group().find('windows') != -1:
+                    windows = match.group()
+                if match.group().find('linux') != -1:
+                    linux = match.group()
+                else:
+                    mac = match.group()
+                break
     if platform == 'windows':
         if windows is not None:
-            metamod_download = 'https://www.metamodsource.net/'+windows
-            return redirect(metamod_download)
+            return redirect(windows)
         else:
             return 'Error finding file'
     if platform == 'linux':
-        if windows is not None:
-            metamod_download = 'https://www.metamodsource.net/'+linux
-            return redirect(metamod_download)
+        if linux is not None:
+            return redirect(linux)
         else:
             return 'Error finding file'
     else:
-        if windows is not None:
-            metamod_download = 'https://www.metamodsource.net/'+mac
-            return redirect(metamod_download)
+        if mac is not None:
+            return redirect(mac)
         else:
             return 'Error finding file'
 
