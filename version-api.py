@@ -113,6 +113,7 @@ def minecraft_versions_list_update():
 def sourcemod_stable(platform, version):
     if platform == 'linux':
         latest_stable = 'http://www.sourcemod.net/smdrop/1.7/sourcemod-latest-linux'
+        latest_stable = requests.get(latest_stable).text
         if version != 'latest':
             sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+version
         else:
@@ -120,6 +121,7 @@ def sourcemod_stable(platform, version):
         return redirect(sourcemod_download)
     if platform == 'windows':
         latest_stable = 'http://www.sourcemod.net/smdrop/1.7/sourcemod-latest-windows'
+        latest_stable = requests.get(latest_stable).text
         if version != 'latest':
             sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+version
         else:
@@ -127,6 +129,7 @@ def sourcemod_stable(platform, version):
         return redirect(sourcemod_download)
     if platform == 'mac':
         latest_stable = 'http://www.sourcemod.net/smdrop/1.7/sourcemod-latest-mac'
+        latest_stable = requests.get(latest_stable).text
         if version != 'latest':
             sourcemod_download = 'http://www.sourcemod.net/smdrop/1.7/'+version
         else:
@@ -138,6 +141,7 @@ def sourcemod_stable(platform, version):
 def sourcemod_dev(platform, version):
     if platform == 'linux':
         latest_dev = 'http://www.sourcemod.net/smdrop/1.8/sourcemod-latest-linux'
+        latest_dev = requests.get(latest_dev).text
         if version != 'latest':
             sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+version
         else:
@@ -145,6 +149,7 @@ def sourcemod_dev(platform, version):
         return redirect(sourcemod_download)
     if platform == 'windows':
         latest_dev = 'http://www.sourcemod.net/smdrop/1.8/sourcemod-latest-windows'
+        latest_dev = requests.get(latest_dev).text
         if version != 'latest':
             sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+version
         else:
@@ -152,6 +157,7 @@ def sourcemod_dev(platform, version):
         return redirect(sourcemod_download)
     if platform == 'mac':
         latest_dev = 'http://www.sourcemod.net/smdrop/1.8/sourcemod-latest-mac'
+        latest_dev = requests.get(latest_dev).text
         if version != 'latest':
             sourcemod_download = 'http://www.sourcemod.net/smdrop/1.8/'+version
         else:
@@ -161,7 +167,7 @@ def sourcemod_dev(platform, version):
 
 @app.route('/metamod/download/<platform>')
 def metamod_latest(platform):
-    response = requests.get('https://www.metamodsource.net/downloads/').content
+    response = requests.get('https://www.metamodsource.net/downloads/', verify=False).content
     links = []
     for l in BeautifulSoup(response, parseOnlyThese=SoupStrainer('a')):
         links.append(l['href'])
