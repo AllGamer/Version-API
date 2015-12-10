@@ -69,6 +69,16 @@ def minecraft_index():
     return render_template('minecraft_index.html')
 
 
+@app.route('/sourcemod')
+def sourcemod_index():
+    return render_template('sourcemod_index.html')
+
+
+@app.route('/metamod')
+def metamod_index():
+    return render_template('metamod_index.html')
+
+
 def minecraft_cache_update():
     r.setex('last_minecraft_update', 900, datetime.now())
     minecraft_json = requests.get('https://s3.amazonaws.com/Minecraft.Download/versions/versions.json').json()
